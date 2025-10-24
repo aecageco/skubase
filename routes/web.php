@@ -21,6 +21,8 @@ require __DIR__.'/auth.php';
 
 //Auth::routes();
 
+Route::get('/sql', [App\Http\Controllers\ItemsController::class, 'sql'])->name('sql');
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 // routes/web.php
 

@@ -5,11 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Items;
 use App\Models\ProductMeta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class ItemsController extends Controller
 {
 
+    public function sql()
+    {
+        $skus = ProductMeta::all();
+        foreach ($skus as $sku) {
+            $item=Items::where('sku',$sku->sku)->first();
+            if ($item){
+            $item->status=1;
+            $item->save();
+    }}
+    }
     public function exportCsv($like, $fileText)
     {
 //        $like="HB%";
@@ -75,14 +86,16 @@ class ItemsController extends Controller
         return view('items.index', compact('items','type'));
 
     }
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
 
     {                $type="All";
-        $skus  = \App\Models\ProductMeta::distinct('sku')->pluck('sku','sku');
-        $items = \App\Models\Items::whereIn('sku', $skus)->paginate(25);
+
+        $items = \App\Models\Items::where('status','=',1)->paginate(25);
         return view('items.index', compact('items','type'));
     }
 
