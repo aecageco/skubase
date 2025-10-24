@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Items;
 use App\Models\ProductMeta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class ItemsController extends Controller
@@ -82,8 +83,19 @@ class ItemsController extends Controller
 
     {                $type="All";
 
-        $skus  = \App\Models\ProductMeta::pluck('sku'); // from sqlite2
-        $items = \App\Models\Items::whereIn('sku', $skus)->paginate(25);
+        $all = \App\Models\ProductMeta::on('sqlite2')->pluck('sku')->all();
+        $chunks = array_chunk($all, 800);
+
+        $base = \App\Models\Items::whereIn('sku', $chunks[0]);
+        foreach (array_slice($chunks, 1) as $c) {
+            $base->unionAll(\App\Models\Items::whereIn('sku', $c));
+        }
+
+        $items = DB::query()
+            ->fromSub($base, 'u')
+            ->orderBy('id')
+            ->paginate(25);
+
         return view('items.index', compact('items','type'));
     }
 
