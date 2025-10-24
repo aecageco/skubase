@@ -28,6 +28,10 @@ Route::post('/item/approve/{sku}', [App\Http\Controllers\ItemApprovalController:
     ->name('item.approve');
 
 // routes/web.php
+Route::get('/items/csv/{like}/{fileText}', [App\Http\Controllers\ItemsController::class, 'exportCsv'])
+    ->name('items.exportCsv');
+Route::get('/items/html', [App\Http\Controllers\ItemsController::class, 'html'])
+    ->name('items.html');
 Route::post('/items/reject/{sku}', [App\Http\Controllers\ItemApprovalController::class, 'reject'])
     ->name('itemapproval.reject');
 Route::get('/items/approved', [App\Http\Controllers\ItemsController::class, 'approved'])

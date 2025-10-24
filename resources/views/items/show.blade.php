@@ -30,7 +30,7 @@
                 @default
                     <span>Unknown</span>
             @endswitch
-            @if ($item->approval->status == 2)<br><b>Rejected Reason:</b> {{$item->approval->reason}}@endif
+            @if ($item->approval->status == 2)<br><b>Rejected Reason:</b> {{$item->approval->reason}}<br><b>Rejected By:</b>{{Auth::user()->name}}@endif
             <br>
             <form
                 action="{{ route('item.approve', $item->sku) }}"

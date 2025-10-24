@@ -5,9 +5,51 @@ namespace App\Http\Controllers;
 use App\Models\Items;
 use App\Models\ProductMeta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class ItemsController extends Controller
 {
+
+    public function exportCsv($like, $fileText)
+    {
+//        $like="HB%";
+//        $fileText="HappyBeaks";
+
+        $skus  = \App\Models\ProductMeta::pluck('sku'); // from sqlite2
+        $items = \App\Models\Items::orderBy('sku','ASC')->whereIn('sku', $skus)->where('SKU','like',$like)->get();
+
+//        $items = \App\Models\Item::limit(100)->get([
+//            'sku','name','price','weight'
+//        ]);
+
+        $filename = $fileText . '.csv';
+        $handle = fopen('php://temp', 'r+');
+
+        // write header
+        fputcsv($handle, array_keys($items->first()->toArray()));
+
+        // write rows
+        foreach ($items as $row) {
+            fputcsv($handle, $row->toArray());
+        }
+
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+
+        return Response::make($csv, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$filename}",
+        ]);
+    }
+
+    public function html(){
+        $skus  = \App\Models\ProductMeta::pluck('sku'); // from sqlite2
+        $items = \App\Models\Items::whereIn('sku', $skus)->get();
+        $items=$items->toArray();
+        $downloader = app(\App\Services\HtmlBatchDownloader::class);
+        $result = $downloader->download($items);
+    }
     public function missing(){
         $type="Missing";
 

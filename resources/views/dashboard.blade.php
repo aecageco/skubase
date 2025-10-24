@@ -7,7 +7,7 @@
 @stop
 
 @section('content')
-    <p>Welcome to this beautiful admin panel.</p>
+    <p>AE Cage Co. Item Database</p>
 @stop
 
 @section('css')
