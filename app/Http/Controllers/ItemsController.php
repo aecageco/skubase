@@ -11,16 +11,7 @@ use Illuminate\Support\Facades\Response;
 class ItemsController extends Controller
 {
 
-    public function sql()
-    {
-        $skus = ProductMeta::all();
-        foreach ($skus as $sku) {
-            $item=Items::where('sku',$sku->sku)->first();
-            if ($item){
-            $item->status=1;
-            $item->save();
-    }}
-    }
+
     public function exportCsv($like, $fileText)
     {
 //        $like="HB%";
